@@ -4,6 +4,6 @@ import Header from '../components/Header.vue'
 
 <template>
   <main>
-    <Header />
+    <Header/>
   </main>
 </template>
