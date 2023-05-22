@@ -1,6 +1,7 @@
 # instaplus
 
-This template should help get you started developing with Vue 3 in Vite.
+Element Plus: https://element-plus.org/es-ES/component/button.html
+Vue 3 Docs: https://vuejs.org/guide/quick-start.html#try-vue-online
 
 ## Recommended IDE Setup
 
