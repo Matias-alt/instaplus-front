@@ -15,7 +15,7 @@
             :model="loginForm"
           >
             <el-form-item label="Email">
-              <el-input v-model="loginForm.email" />
+              <el-input v-model="loginForm.email" type="email"/>
             </el-form-item>
             <el-form-item label="Contraseña">
               <el-input v-model="loginForm.password" type="password" />
@@ -43,36 +43,48 @@
 <script setup>
   import InstaplusApi from '../services/apiService'
   import router from "@/router";
-
-  import { ElNotification } from 'element-plus'
-  import { reactive } from 'vue'
+  import { ElNotification, ElLoading } from 'element-plus'
+  import { reactive, ref } from 'vue'
 
   const loginForm = reactive({ email: '', password: '' });
+  let loadingInstance = '';
 
   function loginUser() {
     if (!validForm()) { return }
 
+    startLoading();
+
     InstaplusApi.login_user(loginForm).then((response) => {
       if(response.data) {
-        router.push({name: 'home'});
+        console.log(loadingInstance);
+        setTimeout(() => {
+          router.push({name: 'home'})
+          stopLoading();
+        }, 500);
       } else {
-        ElNotification({
-          title: 'Error', message: 'Email o contraseña incorrectos', type: 'error'
-        });
-      }
+        ElNotification({ title: 'Error', message: 'Email o contraseña incorrectos', type: 'error' });
+        stopLoading();
+      };
     }).catch((error) => {
-      ElNotification({
-        title: 'Error', message: error, type: 'error'
-      });
+      ElNotification({ title: 'Error', message: error, type: 'error' });
+      stopLoading();
     });
   };
 
+  function startLoading() {
+    loadingInstance = ElLoading.service({ fullscreen: true })
+  };
+
+  function stopLoading() {
+    loadingInstance.close();
+  };
+
   function signUpRedirect() {
-    router.push({name: 'signup'});
+    router.push({name: 'signup'})
   };
 
   function validForm() {
-    if (loginForm.email === ''|| loginForm.password === '' ) {
+    if (loginForm.email === '' || loginForm.password === '' ) {
       ElNotification({
         title: 'Error', message: 'Debe llenar los campos para iniciar sesión', type: 'error'
       });
