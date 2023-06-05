@@ -66,6 +66,8 @@
 
     if (!validPassword()) { return }
 
+    if (!validContentPassword()) { return } 
+
     signUpForm.birthday = moment(signUpForm.birthday).format('YYYY-MM-DD');
 
     InstaplusApi.create_user(signUpForm).then((response) => {
@@ -109,6 +111,47 @@
 
     return true;
   };
+
+  function validContentPassword() { 
+    var password = signUpForm.password.value;
+    if (signUpForm.password.length >= 8) {
+      
+      ElNotification({
+        title: 'Error',
+        message: 'La contraseña debe tener minimo 8 caracteres',
+        type: 'error'
+    });
+
+      return false;
+    };
+    
+    var tieneCaracterEspecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/();
+
+    if (signUpForm.password.length >= 8) {
+      
+      ElNotification({
+        title: 'Error',
+        message: 'La contraseña debe tener minimo 8 caracteres',
+        type: 'error'
+      });
+
+      return false;
+    };
+
+    var tieneNumero = /\d/.test(validContentPassword);
+    var tieneLetra = /[a-zA-Z]/.test(validContentPassword);
+
+    if (signUpForm.password.length >= 8) {
+    ElNotification({
+      title: 'Error',
+      message: 'La contraseña debe incluir al menos un número y una letra.',
+      type: 'error'
+    });
+
+
+    return true;
+  }};
+
 </script>
 
 <style scoped>
