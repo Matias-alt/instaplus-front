@@ -44,7 +44,7 @@
   import InstaplusApi from '../services/apiService'
   import router from "@/router";
   import { ElNotification, ElLoading } from 'element-plus'
-  import { reactive, ref } from 'vue'
+  import { reactive } from 'vue'
 
   const loginForm = reactive({ email: '', password: '' });
   let loadingInstance = '';
@@ -56,7 +56,6 @@
 
     InstaplusApi.login_user(loginForm).then((response) => {
       if(response.data) {
-        console.log(loadingInstance);
         setTimeout(() => {
           router.push({name: 'home'})
           stopLoading();

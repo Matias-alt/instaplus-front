@@ -21,4 +21,11 @@ export default {
 
     return axios.post(`${INSTAPLUS_API_URL}/api/users/create`, params, { headers: { "Content-Type": "application/json" } });
   },
+
+  create_publication(formData) {
+    return axios.post(`${INSTAPLUS_API_URL}/api/publications/save_file`, formData);
+  },
+  get_publications() {
+    return axios.get(`${INSTAPLUS_API_URL}/api/publications/find`);
+  },
 };
