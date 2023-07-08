@@ -20,39 +20,24 @@
             >
               <el-tab-pane class="sub-tab" name="sub-scheduled-pub">
                 <template #label><el-icon class="sub-tab-icon"><Clock /></el-icon></template>
-                <h6>PUBLICACIONES AGENDADAS</h6>
+                <h6>ALERTAS DE PUBLICACIONES</h6>
                 <el-divider />
                 <el-row :gutter="20">
 
-                  <el-col v-for="pub in publications" :key="pub" :span="6">
-                    <el-card :body-style="{ padding: '0px' }">
-                      <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" class="image"/>
-                      <div style="padding: 10px">
-                        <h6>Tips para adelgazar</h6>
-                        <div class="bottom">
-                          <el-button-group class="ml-4">
-                            <el-button><el-icon><View /></el-icon></el-button>
-                            <el-button><el-icon><Edit /></el-icon></el-button>
-                            <el-button><el-icon><Delete /></el-icon></el-button>
-                          </el-button-group>
-                          <el-button type="warning">24:59:31</el-button>
-                        </div>
-                      </div>
-                    </el-card>
-                  </el-col>
+                  <Publications></Publications>
 
                 </el-row>
               </el-tab-pane>
               <el-tab-pane class="sub-tab" name="sub-new-pub" >
                 <template #label><el-icon><Plus /></el-icon></template>
-                <h6>NUEVA PUBLICACION</h6>
-
+                <h6>NUEVA PUBLICACIÓN</h6>
+                <el-divider />
                 <el-form
                   label-position="top"
                   label-width="100px"
                   :model="createPublicationForm"
                 >
-                  <el-form-item label="Titulo">
+                  <el-form-item label="Título">
                     <el-input v-model="createPublicationForm.title" type="text"/>
                   </el-form-item>
                   <el-form-item label="Descripción">
@@ -79,26 +64,23 @@
                     </el-upload>
                   </el-form-item>
                   <el-row>
-                    <el-button  @click="createPublication" type="primary">Crear</el-button>
+                    <el-button @click="createPublication" type="primary">Crear</el-button>
                   </el-row>
                 </el-form>
 
                 <el-divider />
               </el-tab-pane>
-              <el-tab-pane class="sub-tab" name="sub-saving-pub">
-                <template #label><el-icon><Star /></el-icon></template>
-                <h6>FAVORITOS</h6>
-                <el-divider />
-              </el-tab-pane>
+
               <el-tab-pane class="sub-tab" name="sub-calendar-pub">
                 <template #label><el-icon><Calendar /></el-icon></template>
-                <h6>CALENDARIO</h6>
+                <h6>PUBLICACIONES AGENDADAS</h6>
                 <el-divider />
+                <PublicationsCalendar></PublicationsCalendar>
               </el-tab-pane>
             </el-tabs>
           </el-tab-pane>
-          <el-tab-pane label="HISTORIAS" name="histories">HISTORIAS</el-tab-pane>
-          <el-tab-pane label="REELS" name="reels">REELS</el-tab-pane>
+          <el-tab-pane disabled="true" label="HISTORIAS" name="histories">HISTORIAS</el-tab-pane>
+          <el-tab-pane disabled="true" label="REELS" name="reels">REELS</el-tab-pane>
         </el-tabs>
       </el-col>
     </el-row>
@@ -108,13 +90,13 @@
 <script lang="ts" setup>
   import InstaplusApi from '../services/apiService'
   import Header from '../components/Header.vue'
+  import Publications from '../components/Publications.vue'
+  import PublicationsCalendar from '../components/PublicationsCalendar.vue'
   import { reactive, ref } from 'vue'
   import { ElNotification, TabsPaneContext, UploadProps } from 'element-plus'
 
   const categories = ref('publications')
   const publicationSubCategories =  ref('sub-scheduled-pub')
-  const historiesSubCategories =  ref('sub-scheduled-pub')
-  const reelsSubCategories =  ref('sub-scheduled-pub')
 
   const createPublicationForm = reactive({title: '', description: '', publicationDate: '', images: []});
 
@@ -127,25 +109,11 @@
     dialogVisible.value = true
   }
 
-  let publications = [];
-
-  function getPublications() {
-    InstaplusApi.get_publications().then((response) => {
-      if(response.data.length > 0) {
-        console.log(response.data);
-        publications = response.data
-      } else {
-        ElNotification({ title: 'Error', message: 'No se encontraron publicaciones', type: 'error' });
-      };
-    }).catch((error) => {
-      ElNotification({ title: 'Error', message: error, type: 'error' });
-    });
-  }
-
   function createPublication() {
     if (!validForm()) { return }
 
     const formData = new FormData();
+    
     createPublicationForm.images.forEach((file) => {      
       formData.append('file', file.raw);
     });
@@ -156,7 +124,11 @@
 
     InstaplusApi.create_publication(formData).then((response) => {
       if(response.data) {
-
+        ElNotification({ title: 'Genial!', message: 'Publicacion creada exitosamente', type: 'success' });
+        createPublicationForm.title = '';
+        createPublicationForm.description = '';
+        createPublicationForm.publicationDate = '';
+        createPublicationForm.images = [];
       } else {
         ElNotification({ title: 'Error', message: 'No se pudo crear la publicacion', type: 'error' });
       };
@@ -176,10 +148,6 @@
 
     return true;
   };
-
-  getPublications();
-
-  
 </script>
 
 <style>

@@ -4,7 +4,7 @@
       <img class="logo-cont" src="../assets/img/LogoMakr-4jcthR.png" alt="">
     </el-row>
         
-    <h2 class="title">Crea una cuenta en instaplus y comienza a crear! </h2>
+    <h2 class="title">Crea una cuenta en instaplus</h2>
 
     <el-row :gutter="50">
       <el-col :span="24">
@@ -48,7 +48,7 @@
   import InstaplusApi from '../services/apiService'
   import router from "@/router";
 
-  import { ElNotification } from 'element-plus'
+  import { ElNotification, ElLoading } from 'element-plus'
   import moment from 'moment'
   import { reactive } from 'vue'
 
@@ -61,27 +61,39 @@
     repeatPassword: ''
   })
 
+  let loadingInstance = '';
+
   function createUser() {
     if (!validForm()) { return }
 
     if (!validPassword()) { return }
 
+    startLoading();
+
     signUpForm.birthday = moment(signUpForm.birthday).format('YYYY-MM-DD');
 
     InstaplusApi.create_user(signUpForm).then((response) => {
-      console.log(response.data);
       if(response.data.state) {
-        router.push({name: 'login'});
+        setTimeout(() => {
+          router.push({name: 'login'});
+          stopLoading();
+        }, 1000);
       } else {
-        ElNotification({
-          title: 'Error', message: 'Ya existe un usuario con esos datos', type: 'error'
-        });
+        ElNotification({title: 'Error', message: 'Ya existe un usuario con esos datos', type: 'error'});
+        stopLoading();
       }
     }).catch((error) => {
-      ElNotification({
-        title: 'Error', message: error, type: 'error'
-      });
+      ElNotification({title: 'Error', message: error, type: 'error'});
+      stopLoading();
     });
+  };
+
+  function startLoading() {
+    loadingInstance = ElLoading.service({ fullscreen: true })
+  };
+
+  function stopLoading() {
+    loadingInstance.close();
   };
 
   function validForm() {
@@ -100,9 +112,14 @@
   function validPassword() {
     if (signUpForm.password !== signUpForm.repeatPassword) {
       
-      ElNotification({
-        title: 'Error', message: 'Las contraseñas deben ser iguales', type: 'error'
-      });
+      ElNotification({title: 'Error', message: 'Las contraseñas deben ser iguales', type: 'error'});
+
+      return false;
+    };
+
+    if (signUpForm.password.length < 10) {
+      
+      ElNotification({title: 'Error', message: 'La contraseña debe tener minimo 10 caracteres', type: 'error'});
 
       return false;
     };

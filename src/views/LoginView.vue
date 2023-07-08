@@ -30,7 +30,7 @@
             </el-row>
 
             <el-row>
-              <el-button @click="loginUser" type="primary">Iniciar sesion</el-button>
+              <el-button @click="loginUser" type="primary">Iniciar sesión</el-button>
               <el-button  @click="signUpRedirect" type="primary">Registrarse</el-button>
             </el-row>
           </el-form>
